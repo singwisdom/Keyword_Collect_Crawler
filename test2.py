@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
 import openpyxl
 import time
 
@@ -41,33 +42,46 @@ driver.get("https://datalab.naver.com/shoppingInsight/sCategory.naver")
 htmlSource = driver.page_source
 
 soup = BeautifulSoup(htmlSource, "lxml")
+time.sleep(2)
 
 # 1분류 선택
 first = soup.select("#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(1) > ul > li")
-time.sleep(2)
+
 words = []
-
-#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(1) > ul > li:nth-child(2) > a
-
 # 자동완성어들을 리스트에 저장
 for word in first:
     words.append(word.text)
 print(words)
 
-count =0
+time.sleep(2)
 
-for i in words:
-    if(i==find[0]):
-        # time.sleep(3)
-        # driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[1]/ul/li["+str(count)+"]/a").click()
-        
-
-        count+=1
+for i in range(len(words)):  
+    if(words[i]==find[0]):
+        print(words[i])
         print(i)
+        element = driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[1]/ul/li["+str(i+1)+"]/a")
+        driver.execute_script("arguments[0].click();",element)
 
-soup.select("#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(1) > ul > li").click()
+time.sleep(2)
+htmlSource = driver.page_source
+soup = BeautifulSoup(htmlSource, "lxml")
+
+##### 2분류 선택 #########
+second = soup.select("#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(2) > ul > li")
+#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(2) > ul
+
+words2 = []
+# 자동완성어들을 리스트에 저장
+for word in second:
+    words2.append(word.text)
+print(words2)
+
+time.sleep(2)
+
+for i in range(len(words2)):  
+    if(words2[i]==find[1]):
+        print(words2[i])
+        element = driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[2]/ul/li["+str(i+1)+"]/a")
+        driver.execute_script("arguments[0].click();",element)
+
 time.sleep(3)
-
-# //*[@id="content"]/div[2]/div/div[1]/div/div/div[1]/div/div[1]/ul/li[1]/a
-# //*[@id="content"]/div[2]/div/div[1]/div/div/div[1]/div/div[1]/ul/li[2]/a
-

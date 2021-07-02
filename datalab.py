@@ -1,3 +1,4 @@
+import time
 from unicodedata import category
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -41,23 +42,78 @@ htmlSource = driver.page_source
 
 soup = BeautifulSoup(htmlSource, "lxml")
 
-# 1분류 선택
-first = driver.find_element_by_class_name("select_list scroll_cst")
-li=first.find_elements_by_tag_name('li')
-print(li)
-# driver.implicitly_wait(1)
 
-# #2분류 선택
-# driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[2]/span").click()
-# driver.implicitly_wait(1)
+###### 1분류 선택 #########
+first = soup.select("#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(1) > ul > li")
 
-# #3분류 선택
-# driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[3]/ul").click() 
-# driver.implicitly_wait(1)
-    
-# #4분류 선택
-# driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[4]/ul").click() 
-# driver.implicitly_wait(1)
+words1 = []
+# 자동완성어들을 리스트에 저장
+for word in first:
+    words1.append(word.text)
+
+for i in range(len(words1)):  
+    if(words1[i]==find[0]):
+        print(words1[i])
+        element = driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[1]/ul/li["+str(i+1)+"]/a")
+        driver.execute_script("arguments[0].click();",element)
+
+time.sleep(2)
+
+htmlSource = driver.page_source
+soup = BeautifulSoup(htmlSource, "lxml")
+
+##### 2분류 선택 #########
+second = soup.select("#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(2) > ul > li")
+
+words2 = []
+# 자동완성어들을 리스트에 저장
+for word in second:
+    words2.append(word.text)
+
+for i in range(len(words2)):  
+    if(words2[i]==find[1]):
+        print(words2[i])
+        element = driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[2]/ul/li["+str(i+1)+"]/a")
+        driver.execute_script("arguments[0].click();",element)
+
+time.sleep(2)
+
+htmlSource = driver.page_source
+soup = BeautifulSoup(htmlSource, "lxml")
+
+###### 3분류 선택 #########
+third = soup.select("#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(3) > ul > li")
+
+words3 = []
+# 자동완성어들을 리스트에 저장
+for word in third:
+    words3.append(word.text)
+
+for i in range(len(words3)):  
+    if(words3[i]==find[2]):
+        print(words3[i])
+        element = driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[3]/ul/li["+str(i+1)+"]/a")
+        driver.execute_script("arguments[0].click();",element)
+
+time.sleep(2)
+
+htmlSource = driver.page_source
+soup = BeautifulSoup(htmlSource, "lxml")
+
+###### 4분류 선택 #########
+four = soup.select("#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(4) > ul > li")
+
+words4 = []
+# 자동완성어들을 리스트에 저장
+for word in four:
+    words4.append(word.text)
+
+for i in range(len(words4)):  
+    if(words4[i]==find[3]):
+        print(words4[i])
+        element = driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[4]/ul/li["+str(i+1)+"]/a")
+        driver.execute_script("arguments[0].click();",element)
+time.sleep(2)
 
 
 #기간 1년 선택
@@ -81,30 +137,32 @@ driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/a").click
 driver.implicitly_wait(1)
 
 
-words=[]
+data=[]
 
 #인기 검색어 10페이지까지 크롤링
 count = 1
 for i in range(1,11):
 
+    soup = BeautifulSoup(htmlSource, "lxml")
+
     #다음 페이지로 넘어가기
     driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[2]/div[2]/div/div/div[2]/div/a[2]").click()
      
-    driver.implicitly_wait(1)
+    time.sleep(1)
 
-    soup = BeautifulSoup(htmlSource, "lxml")
+    time.sleep(1)
 
     PopularKeywords =driver.find_elements_by_class_name("link_text")
   
    
     for word in PopularKeywords:
-        words.append(word.text[len(str(count)):])
+        data.append(word.text[len(str(count)):])
         count += 1
 
 new_words=[]
 
 # 앞에 필요없는 부분 정제
-for v in words:
+for v in data:
         new_words.append(v.replace('\n',''))
 
 
@@ -114,4 +172,4 @@ for i in new_words:
 
 driver.quit()
     
-wb.save("자동완성어.xlsx")
+wb.save("데이터랩.xlsx")
