@@ -4,25 +4,13 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
-import openpyxl
 import time
 
-############### 데이터랩 크롤러 ###############################
+############### 쇼핑 키워드 추천 크롤러 ###############################
 
-find=['생활/건강', '주방용품', '주방잡화', '일회용식기']
-
-#Workbook 생성
-wb = openpyxl.Workbook()
-
-#Sheet 활성
-sheet = wb.active
-
-#sheet 이름 설정
-wb.title="자동완성어"
-
-#데이터 프레임 내 변수명 생성
-sheet.append(["결과"])
+#검색어를 입력
+print("검색어를 입력해주세요:")
+keyword=input()
 
 
 # 크롬드라이버 옵션 설정
@@ -38,50 +26,67 @@ driver = webdriver.Chrome("chromedriver", chrome_options=options)
 wait = WebDriverWait(driver, 3)
 visible = EC.visibility_of_element_located  # DOM에 나타남, 웹에 보여야 조건 만족
 
-driver.get("https://datalab.naver.com/shoppingInsight/sCategory.naver")
+
+# 쇼핑 페이지 이동
+driver.get("https://search.shopping.naver.com/search/all?query="+keyword)
+    
 htmlSource = driver.page_source
 
 soup = BeautifulSoup(htmlSource, "lxml")
-time.sleep(2)
-
-# 1분류 선택
-first = soup.select("#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(1) > ul > li")
-
 words = []
-# 자동완성어들을 리스트에 저장
-for word in first:
-    words.append(word.text)
+
+# iskeyword=soup.select(".filter_finder_tit__2VCKd")
+#__next > div > div.style_container__1YjHN > div.style_inner__18zZX > div.filter_finder__1Gtei > div > div
+
+length=len(soup.select("#__next > div > div.style_container__1YjHN > div.style_inner__18zZX > div.filter_finder__1Gtei > div > div"))
+print(length)
+
+for i in range(1,length+1):
+    iskeyword=driver.find_elements_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]"%i)
+
+    # 분류들을 리스트에 저장a
+    for word in iskeyword:
+        words.append(word.text.replace('\n',''))
 print(words)
 
-time.sleep(2)
 
-for i in range(len(words)):  
-    if(words[i]==find[0]):
-        print(words[i])
-        print(i)
-        element = driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[1]/ul/li["+str(i+1)+"]/a")
-        driver.execute_script("arguments[0].click();",element)
 
-time.sleep(2)
-htmlSource = driver.page_source
-soup = BeautifulSoup(htmlSource, "lxml")
+# 더보기 버튼 선택 
 
-##### 2분류 선택 #########
-second = soup.select("#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(2) > ul > li")
-#content > div.section_instie_area.space_top > div > div.section.insite_inquiry > div > div > div:nth-child(1) > div > div:nth-child(2) > ul
+for i in range(0,len(words)):
 
-words2 = []
-# 자동완성어들을 리스트에 저장
-for word in second:
-    words2.append(word.text)
-print(words2)
+    if(words[i]=='키워드추천더보기'):
+        tmp=i
+        driver.find_element_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]/a"%(tmp+1)).click()
+        soup = BeautifulSoup(htmlSource, "lxml")
+        time.sleep(1)
 
-time.sleep(2)
+        # 키워드추천 크롤링
+        keysuggest = driver.find_elements_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[2]/div/ul/li"%(tmp+1))
+        # word = [word.text.replace('\n','') for word in keysuggest]        
 
-for i in range(len(words2)):  
-    if(words2[i]==find[1]):
-        print(words2[i])
-        element = driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[2]/ul/li["+str(i+1)+"]/a")
-        driver.execute_script("arguments[0].click();",element)
+        words = []
+        for word in keysuggest:
+            words.append(word.text.replace('\n',''))
+    elif(words[i]=='키워드추천'):
+        tmp=i
+        driver.find_element_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]/a"%(tmp+1)).click()
+        soup = BeautifulSoup(htmlSource, "lxml")
+        time.sleep(1)
 
-time.sleep(3)
+        # 키워드추천 크롤링
+        keysuggest = driver.find_elements_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[2]/div/ul/li"%(tmp+1))
+        # word = [word.text.replace('\n','') for word in keysuggest]        
+
+        words = []
+        for word in keysuggest:
+            words.append(word.text.replace('\n',''))
+    else:
+        if(i==len(words)-1):
+            time.sleep(0.5)
+            words = []
+
+
+print(words)
+
+

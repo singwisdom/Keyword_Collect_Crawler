@@ -1,16 +1,11 @@
-from unicodedata import category
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+import time
 
 ############### 쇼핑 카테고리 크롤러 ###############################
-
-
-print("검색어를 입력해주세요:")
-keyword=input()
 
 def getCategory(keyword):
 
@@ -37,9 +32,10 @@ def getCategory(keyword):
 
     words = []
     new_words=[]
+    category=[]
 
     # 1페이지 부터 3페이지까지 크롤링
-    for i in range(1,6):
+    for i in range(1,4):
         link = url.format(i)
         driver.get(link)
         driver.implicitly_wait(1)
@@ -48,27 +44,30 @@ def getCategory(keyword):
 
         #스크롤 끝까지 내리기
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);") 
-        driver.implicitly_wait(1)
+        time.sleep(2)
 
         soup = BeautifulSoup(htmlSource, "lxml")
+        time.sleep(0.5)
 
-        #카테고리
-        # category = driver.find_elements_by_class_name("basicList_depth__2QIie")
-        category = soup.select(".basicList_depth__2QIie")
-        
+        # 카테고리
+        category_length = len(soup.select("#__next > div > div.style_container__1YjHN > div.style_inner__18zZX > div.style_content_wrap__1PzEo > div.style_content__2T20F > ul > div > div"))
+       
 
         # 모든 카테고리 리스트 저장
-        for word in category:
-            words.append(word.text)
+        for k in range(1,category_length+1):
+            words=[]
+            category_a = soup.select("#__next > div > div.style_container__1YjHN > div.style_inner__18zZX > div.style_content_wrap__1PzEo > div.style_content__2T20F > ul > div > div:nth-child(%d) > li > div > div.basicList_info_area__17Xyo > div.basicList_depth__2QIie > a"%k)
+            [words.append(word.text) for word in category_a]
+            # for word in category_a:
+            #     words.append(word.text)
+            new_words.append(words)
+    
 
     driver.quit() #종료
 
-    # words 리스트에 있는 내용 중복 제거
-    for v in words:
-        if v not in new_words:
-            new_words.append(v)
-    return new_words
+    # new_words 리스트에 있는 내용 중복 제거
+    for v in new_words:
+        if v not in category:
+            category.append(v)
+    return category
 
-   
-    
-print(getCategory(keyword))
