@@ -1,9 +1,10 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
+import time
+from random import *
+
 
 
 none="없음"
@@ -31,12 +32,14 @@ def GetBlog_keyword(keyword):
     #검색창에 입력할 키워드 받고 입력
     findelem = driver.find_element_by_name("sectionBlogQuery")
     findelem.send_keys(keyword)
+    time.sleep(uniform(1.0,2.5))
 
     #검색 조회
     driver.find_element_by_xpath("//*[@id='header']/div[1]/div/div[2]/form/fieldset/a[1]/i").click()
-    driver.implicitly_wait(1)
+    time.sleep(uniform(2.0,4.0))
 
     soup = BeautifulSoup(htmlSource, "lxml")
+    time.sleep(uniform(2.0,4.0))
 
     try:
         #블로그 연관검색 크롤링

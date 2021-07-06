@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+from random import *
 
 ############### 쇼핑 키워드추천 및 연관검색어 크롤러 ###############################
 
@@ -34,24 +34,23 @@ def GetShopping_keyword_and_relatedword(keyword):
 
     # div의 개수를 구함
     length=len(soup.select("#__next > div > div.style_container__1YjHN > div.style_inner__18zZX > div.filter_finder__1Gtei > div > div"))
-
+    time.sleep(uniform(2.0,4.0))
 
     for i in range(1,length+1):
         iskeyword=driver.find_elements_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]"%i)
 
-        # 분류들을 리스트에 저장a
-        for word in iskeyword:
-            words.append(word.text.replace('\n',''))
+        # 분류들을 리스트에 저장
+        [words.append(word.text.replace('\n','')) for word in iskeyword] 
+            
 
     # 더보기 버튼 선택 
-
     for i in range(0,len(words)):
 
         if(words[i]=='키워드추천더보기'):
             tmp=i
             driver.find_element_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]/a"%(tmp+1)).click()
             soup = BeautifulSoup(htmlSource, "lxml")
-            time.sleep(1)
+            time.sleep(uniform(2.0,4.0))
 
             # 키워드추천 크롤링
             keysuggest = driver.find_elements_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[2]/div/ul/li"%(tmp+1))
@@ -64,7 +63,7 @@ def GetShopping_keyword_and_relatedword(keyword):
             tmp=i
             driver.find_element_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]/a"%(tmp+1)).click()
             soup = BeautifulSoup(htmlSource, "lxml")
-            time.sleep(1)
+            time.sleep(uniform(2.0,4.0))
 
             # 키워드추천 크롤링
             keysuggest = driver.find_elements_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[2]/div/ul/li"%(tmp+1))
@@ -80,10 +79,11 @@ def GetShopping_keyword_and_relatedword(keyword):
 
     
     soup = BeautifulSoup(htmlSource, "lxml")
-    time.sleep(0.9)
+    time.sleep(uniform(2.0,4.0))
         
     # 연관검색어 크롤링
     relationKeywords = soup.select("#__next > div > div.style_container__1YjHN > div.relatedTags_relation_tag__2sDdc > div > ul>li")
+    time.sleep(uniform(2.0,4.0))
 
 
     related_words = []

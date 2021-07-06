@@ -1,26 +1,12 @@
 import time
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-
+from random import *
 
 ############### 자동완성어 크롤러 ###############################
-
-# #Workbook 생성
-# wb = openpyxl.Workbook()
-
-# #Sheet 활성
-# sheet = wb.active
-
-# #sheet 이름 설정
-# wb.title="자동완성어"
-
-# #데이터 프레임 내 변수명 생성
-# sheet.append(["결과"])
-
 
 def GetAutokeyword(keyword):
     # 크롬드라이버 옵션 설정
@@ -42,9 +28,10 @@ def GetAutokeyword(keyword):
 
     findelem = driver.find_element_by_name("query")
     findelem.send_keys(keyword)
+    time.sleep(uniform(2.0,4.0))
 
     soup = BeautifulSoup(htmlSource, "lxml")
-    time.sleep(1)
+    time.sleep(uniform(2.0,5.0))
    
 
     #자동완성어 크롤링

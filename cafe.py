@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
+import time
+from random import *
 
 ############### 카페 연관검색어 크롤러 ###############################
 
@@ -28,10 +28,11 @@ def GetCafe_keyword(keyword):
     #검색창에 입력할 키워드 받고 입력
     findelem = driver.find_element_by_css_selector("#header > div.snb_area > div > form > fieldset > div > div > input")
     findelem.send_keys(keyword)
+    time.sleep(uniform(2.0,3.2))
 
     #검색 조회
     driver.find_element_by_css_selector("#header > div.snb_area > div > form > fieldset > div > button > span.ico_search").click()
-    driver.implicitly_wait(1)
+    time.sleep(uniform(2.0,4.0))
 
     # 더보기 버튼 누르기
     try:
@@ -41,12 +42,13 @@ def GetCafe_keyword(keyword):
         driver.implicitly_wait(1)
 
     soup = BeautifulSoup(htmlSource, "lxml")
+    time.sleep(uniform(2.0,3.5))
 
     #카페 연관검색 크롤링
 
     try:
         CafeKeywords = driver.find_elements_by_class_name("relation_search_item")
-        driver.implicitly_wait(1)
+        time.sleep(uniform(2.0,3.5))
     except AttributeError as e:
         print(" ")
 
