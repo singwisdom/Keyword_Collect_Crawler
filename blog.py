@@ -1,59 +1,35 @@
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import time
-from random import *
-
-
-
-none="없음"
+from tqdm import tqdm
+from selenium.common.exceptions import NoSuchElementException
+from random import uniform
+from selenium.webdriver.chrome.webdriver import WebDriver
 
 # ############### 블로그 연관검색어 크롤러 ###############################
 
-
-def GetBlog_keyword(keyword):
-    # 크롬드라이버 옵션 설정
-    options = webdriver.ChromeOptions()
-    # options.add_argument('headless') # 헤드리스
-    options.add_argument("window-size=1920x1080")
-    options.add_argument("disable-gpu")
-
-    driver = webdriver.Chrome("chromedriver", chrome_options=options)
-
-    # 대기 설정
-    wait = WebDriverWait(driver, 3)
-    visible = EC.visibility_of_element_located  # DOM에 나타남, 웹에 보여야 조건 만족
+def get_blog_keyword(keyword:str, driver:WebDriver):
 
     # 블로그 페이지 이동
     driver.get("https://section.blog.naver.com/BlogHome.naver?directoryNo=0&currentPage=1&groupId=0")
-    htmlSource = driver.page_source
 
     #검색창에 입력할 키워드 받고 입력
-    findelem = driver.find_element_by_name("sectionBlogQuery")
-    findelem.send_keys(keyword)
-    time.sleep(uniform(1.0,2.5))
+    driver.find_element_by_name("sectionBlogQuery").send_keys(keyword)
+    time.sleep(uniform(1.0, 2.5))
 
     #검색 조회
     driver.find_element_by_xpath("//*[@id='header']/div[1]/div/div[2]/form/fieldset/a[1]/i").click()
-    time.sleep(uniform(2.0,4.0))
+    time.sleep(uniform(1.0, 2.0))
 
-    soup = BeautifulSoup(htmlSource, "lxml")
-    time.sleep(uniform(2.0,4.0))
+    soup = BeautifulSoup(driver.page_source, "lxml")
+    time.sleep(uniform(1.0, 3.0))
 
     try:
-        #블로그 연관검색 크롤링
-        BlogKeywords = driver.find_elements_by_css_selector("#container > div > aside > div > div.area_keyword > div.list > a")
-    except AttributeError or Exception as e:
-        print(" ")
-    else:
-        if BlogKeywords==None:
-            print(" ")
-        else :
-            words = []
-            for word in BlogKeywords:
-                words.append(word.text.replace('\n',''))
+        blog_keywords = driver.find_elements_by_css_selector("#container > div > aside > div > div.area_keyword > div.list > a") # 블로그 연관검색 
+    except NoSuchElementException or Exception as e:
+        print("※ 해당 키워드는 블로그 연관검색어가 존재하지 않습니다. ※")
 
-    driver.quit()
-    return words
+    blog_words = []
+    
+    print("◆ 블로그 연관검색어 수집 완료")            
+    return [blog_words.append(word.text.replace('\n','')) for word in tqdm(blog_keywords, desc="자동완성어 수집 진행상태")]
 

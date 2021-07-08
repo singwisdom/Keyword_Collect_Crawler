@@ -1,100 +1,66 @@
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import time
-from random import *
+from selenium.common.exceptions import NoSuchElementException, ElementNotInteractableException
+from random import uniform
+from selenium.webdriver.remote.webdriver import WebDriver
 
-############### 쇼핑 키워드추천 및 연관검색어 크롤러 ###############################
+############### 쇼핑 키워드추천 및 연관검색어 크롤러 #######################
 
-def GetShopping_keyword_and_relatedword(keyword):
-
-    # 크롬드라이버 옵션 설정
-    options = webdriver.ChromeOptions()
-
-    # options.add_argument('headless') # 헤드리스
-    options.add_argument("window-size=1920x1080")
-    options.add_argument("disable-gpu")
-
-    driver = webdriver.Chrome("chromedriver", chrome_options=options)
-
-    # 대기 설정
-    wait = WebDriverWait(driver, 3)
-    visible = EC.visibility_of_element_located  # DOM에 나타남, 웹에 보여야 조건 만족
-
+def get_shopping_keyword_and_relatedword(keyword:str, driver:WebDriver):
 
     # 쇼핑 페이지 이동
     driver.get("https://search.shopping.naver.com/search/all?query="+keyword)
-        
-    htmlSource = driver.page_source
+    soup = BeautifulSoup(driver.page_source, "lxml")
 
-    soup = BeautifulSoup(htmlSource, "lxml")
-    words = []
-    new_words=[]
+    find_where_recommend = [] # 키워드추천이 어디에 있는지 찾기 위한 변수
 
     # div의 개수를 구함
-    length=len(soup.select("#__next > div > div.style_container__1YjHN > div.style_inner__18zZX > div.filter_finder__1Gtei > div > div"))
-    time.sleep(uniform(2.0,4.0))
+    div_length=len(soup.select("#__next > div > div.style_container__1YjHN > div.style_inner__18zZX > div.filter_finder__1Gtei > div > div"))
 
-    for i in range(1,length+1):
-        iskeyword=driver.find_elements_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]"%i)
+    time.sleep(uniform(1.0, 1.5))
 
-        # 분류들을 리스트에 저장
-        [words.append(word.text.replace('\n','')) for word in iskeyword] 
-            
+    for i in range(1, div_length+1):
+        is_keyword=driver.find_elements_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]"%i) # 키워드 추천아 있는지 없는지 확인하기 위함
+        [find_where_recommend.append(word.text.replace('\n', '')) for word in is_keyword]  # 분류들을 리스트에 저장
+
+    length = len(find_where_recommend) # 분류들의 개수
 
     # 더보기 버튼 선택 
-    for i in range(0,len(words)):
+    for i in range(0, length):
 
-        if(words[i]=='키워드추천더보기'):
-            tmp=i
-            driver.find_element_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]/a"%(tmp+1)).click()
-            soup = BeautifulSoup(htmlSource, "lxml")
-            time.sleep(uniform(2.0,4.0))
-
+        if find_where_recommend[i]=='키워드추천더보기' or find_where_recommend[i]=='키워드추천': # 리스트에 키워드 추천이 있을 경우
+            try:
+                driver.find_element_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]/a"%(i+1)).click()
+            except ElementNotInteractableException or NoSuchElementException or AttributeError or Exception as e:
+                time.sleep(uniform(1.0, 2.5))
+            
+            time.sleep(uniform(1.0, 2.5))
+            soup = BeautifulSoup(driver.page_source, "lxml")
+            
             # 키워드추천 크롤링
-            keysuggest = driver.find_elements_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[2]/div/ul/li"%(tmp+1))
-            # word = [word.text.replace('\n','') for word in keysuggest]        
-
-            words = []
-            for word in keysuggest:
-                words.append(word.text.replace('\n',''))
-        elif(words[i]=='키워드추천'):
-            tmp=i
-            driver.find_element_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]/a"%(tmp+1)).click()
-            soup = BeautifulSoup(htmlSource, "lxml")
-            time.sleep(uniform(2.0,4.0))
-
-            # 키워드추천 크롤링
-            keysuggest = driver.find_elements_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[2]/div/ul/li"%(tmp+1))
-            # word = [word.text.replace('\n','') for word in keysuggest]        
-
-            words = []
-            for word in keysuggest:
-                words.append(word.text.replace('\n',''))
-        else:
-            if(i==len(words)-1):
+            keysuggest = driver.find_elements_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[2]/div/ul/li"%(i+1))
+      
+            recommend_word = []
+            [recommend_word.append(word.text.replace('\n', '')) for word in keysuggest]
+            break
+        else: # 리스트에 키워드 추천이 없을 경우
+            if i==length-1:
                 time.sleep(0.5)
-                words = []
+                recommend_word = []
 
     
-    soup = BeautifulSoup(htmlSource, "lxml")
-    time.sleep(uniform(2.0,4.0))
+    soup = BeautifulSoup(driver.page_source, "lxml")
+    time.sleep(uniform(1.0, 2.5))
         
     # 연관검색어 크롤링
-    relationKeywords = soup.select("#__next > div > div.style_container__1YjHN > div.relatedTags_relation_tag__2sDdc > div > ul>li")
-    time.sleep(uniform(2.0,4.0))
-
-
+    relation_keywords = soup.select("#__next > div > div.style_container__1YjHN > div.relatedTags_relation_tag__2sDdc > div > ul > li")
     related_words = []
+    
     # 연관검색어들을 리스트에 저장
-    for word in relationKeywords:
-        related_words.append(word.text)
+    [related_words.append(word.text) for word in relation_keywords]
+        
+    print("◆ 네이버 쇼핑사이트 키워드추천, 연관검색어 수집 완료")
 
-
-    driver.quit()
-    new_words=words+related_words
-
-    return new_words
+    return recommend_word+related_words
 
 
