@@ -5,7 +5,6 @@ from random import uniform
 from selenium.webdriver.remote.webdriver import WebDriver
 
 ############### 쇼핑 키워드추천 및 연관검색어 크롤러 #######################
-
 def get_shopping_keyword_and_relatedword(keyword:str, driver:WebDriver):
 
     # 쇼핑 페이지 이동
@@ -31,8 +30,8 @@ def get_shopping_keyword_and_relatedword(keyword:str, driver:WebDriver):
         if find_where_recommend[i]=='키워드추천더보기' or find_where_recommend[i]=='키워드추천': # 리스트에 키워드 추천이 있을 경우
             try:
                 driver.find_element_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]/a"%(i+1)).click()
-            except ElementNotInteractableException or NoSuchElementException or AttributeError or Exception as e:
-                time.sleep(uniform(1.0, 2.5))
+            except NoSuchElementException or ElementNotInteractableException or AttributeError or Exception as e:
+                time.sleep(uniform(1.0, 1.5))
             
             time.sleep(uniform(1.0, 2.5))
             soup = BeautifulSoup(driver.page_source, "lxml")
@@ -58,9 +57,5 @@ def get_shopping_keyword_and_relatedword(keyword:str, driver:WebDriver):
     
     # 연관검색어들을 리스트에 저장
     [related_words.append(word.text) for word in relation_keywords]
-        
-    print("◆ 네이버 쇼핑사이트 키워드추천, 연관검색어 수집 완료")
-
+    
     return recommend_word+related_words
-
-

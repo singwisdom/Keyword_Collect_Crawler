@@ -1,16 +1,21 @@
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import chromedriver_autoinstaller
 
 def turn_on_chrome_driver():
 
+    check_chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0]  # 크롬버전 확인
+
     # 크롬드라이버 옵션 설정
     options = webdriver.ChromeOptions()
-    options.add_argument("window-size=1920x1080")
-    options.add_argument("disable-gpu")
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-    driver = webdriver.Chrome("chromedriver", chrome_options=options)
+    try:
+        driver = webdriver.Chrome(f'./{check_chrome_ver}/chromedriver.exe', chrome_options=options)
+    except Exception as e:
+        chromedriver_autoinstaller.install(True)
+        driver = webdriver.Chrome(f'./{check_chrome_ver}/chromedriver.exe', chrome_options=options)
 
     # 대기 설정
     wait = WebDriverWait(driver, 3)

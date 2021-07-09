@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from tqdm import tqdm
 import time
 from random import uniform
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -16,7 +17,7 @@ def get_category_title(keyword:str, driver:WebDriver):
     url = "https://search.shopping.naver.com/search/all?origQuery="+keyword+"&pagingIndex={}&pagingSize=40&productSet=total&query="+keyword+"&sort=rel&timestamp=&viewType=list"
     
     # 1페이지 부터 3페이지까지 크롤링
-    for i in range(1, 4):
+    for i in tqdm(range(1, 4), desc="카테고리 & 제목") :
         link = url.format(i)
         driver.get(link)
         time.sleep(uniform(1.0, 2.0))
@@ -25,7 +26,7 @@ def get_category_title(keyword:str, driver:WebDriver):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);") 
         time.sleep(uniform(1.5, 2.0))
         soup = BeautifulSoup(driver.page_source, "lxml")
-        time.sleep(uniform(1.5, 2.5))
+        time.sleep(uniform(1.5, 2.0))
 
         # 카테고리
         length = len(soup.select("#__next > div > div.style_container__1YjHN > div.style_inner__18zZX > div.style_content_wrap__1PzEo > div.style_content__2T20F > ul > div > div"))
@@ -36,7 +37,7 @@ def get_category_title(keyword:str, driver:WebDriver):
             for word in get_title:
                 title=word.text.split()
                 shopping_title+=title
-        time.sleep(uniform(2.0, 3.0))
+        time.sleep(uniform(1.0, 2.5))
 
         # 모든 카테고리 리스트 저장
         for k in range(1, length+1):
@@ -49,10 +50,8 @@ def get_category_title(keyword:str, driver:WebDriver):
     for v in category_tmp:
         if v not in category:
             category.append(v)
-
-    print("◆ 네이버 쇼핑 사이트 카테고리, 타이틀 수집 완료")
+            
     return shopping_title
 
 def get_category():
     return category
-

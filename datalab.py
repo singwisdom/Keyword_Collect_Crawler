@@ -1,4 +1,5 @@
 import time
+from tqdm import tqdm
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.webdriver import WebDriver
 from shopping_category_title import get_category
@@ -16,7 +17,7 @@ def get_datalab(driver:WebDriver):
     length = len(find)  #카테고리의 길이
 
     # find의 길이만큼 반복
-    for j in range(0, length):
+    for j in range(0, length) :
 
         driver.get("https://datalab.naver.com/shoppingInsight/sCategory.naver")
 
@@ -34,54 +35,41 @@ def get_datalab(driver:WebDriver):
                 if words[i]==find[j][k-1]:
                     element = driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[1]/div/div[%d]/ul/li["%k+str(i+1)+"]/a")
                     driver.execute_script("arguments[0].click();", element)
-            time.sleep(uniform(4.0, 7.0))
+            time.sleep(uniform(4.0, 6.0))
             
-
-        #기간 1년 선택
-        driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[2]/div[1]/span/label[3]").click()
+        driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[2]/div[1]/span/label[3]").click() # 기간 1년 선택
         time.sleep(uniform(4.0, 6.0))
 
-        #기기 전체 선택
-        driver.find_element_by_xpath("//*[@id='18_device_0']").click()
+        driver.find_element_by_xpath("//*[@id='18_device_0']").click() # 기기 전체 선택
         time.sleep(uniform(4.0, 6.0))
-
-        #성별 전체 선택
-        driver.find_element_by_xpath("//*[@id='19_gender_0']").click()
+        
+        driver.find_element_by_xpath("//*[@id='19_gender_0']").click() # 성별 전체 선택
         time.sleep(uniform(4.0, 6.0))
-
-        #연령 전체 선택
-        driver.find_element_by_xpath("//*[@id='20_age_0']").click()
+        
+        driver.find_element_by_xpath("//*[@id='20_age_0']").click() # 연령 전체 선택
         time.sleep(uniform(4.0, 6.0))
-
-        #조회하기
-        driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/a").click()
+        
+        driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/a").click() # 조회하기
         time.sleep(uniform(3.0, 5.0))
 
-
         ranking_num = 1 # 랭킹 순위
-        for k in range(1, 11): #인기 검색어 10페이지까지 크롤링
+        for k in tqdm(range(1, 11), desc="데이터랩 진행상황 (%d)"%(j+1)) : # 인기 검색어 10페이지까지 크롤링
 
             soup = BeautifulSoup(driver.page_source, "lxml")
-            time.sleep(uniform(4.0, 7.0))
+            time.sleep(uniform(3.0, 7.0))
 
             popular_keywords =driver.find_elements_by_class_name("link_text") # 인기 검색어
             time.sleep(uniform(2.0, 4.0))
         
             for word in popular_keywords:
-                datalab_tmp.append(word.text[len(str(ranking_num)):]) #앞에 필요없는 부분들(rankgin_num)을 지운 후 저장
+                datalab_tmp.append(word.text[len(str(ranking_num)):]) # 앞에 필요없는 부분들(rankgin_num)을 지운 후 저장
                 ranking_num += 1
 
             driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[2]/div[2]/div/div/div[2]/div/a[2]").click()  # 다음 페이지로 넘어가기
-            time.sleep(uniform(5.0, 7.0))  
+            time.sleep(uniform(3.5, 7.0)) 
 
-        # 앞에 필요없는 부분 제거
-        [datalab_words.append(v.replace('\n','')) for v in datalab_tmp]
+    # 앞에 필요없는 부분 제거
+    [datalab_words.append(v.replace('\n','')) for v in datalab_tmp]
             
     driver.quit()
-    print("◆ 데이터랩 인기검색어 수집 완료")
-
     return datalab_words
-    
-
-
-
