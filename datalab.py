@@ -38,35 +38,34 @@ def get_datalab(driver:WebDriver):
             time.sleep(uniform(4.0, 6.0))
             
         driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[2]/div[1]/span/label[3]").click() # 기간 1년 선택
-        time.sleep(uniform(4.0, 6.0))
+        time.sleep(uniform(3.0, 5.0))
 
         driver.find_element_by_xpath("//*[@id='18_device_0']").click() # 기기 전체 선택
-        time.sleep(uniform(4.0, 6.0))
+        time.sleep(uniform(3.0, 5.0))
         
         driver.find_element_by_xpath("//*[@id='19_gender_0']").click() # 성별 전체 선택
-        time.sleep(uniform(4.0, 6.0))
+        time.sleep(uniform(3.0, 5.0))
         
         driver.find_element_by_xpath("//*[@id='20_age_0']").click() # 연령 전체 선택
-        time.sleep(uniform(4.0, 6.0))
+        time.sleep(uniform(3.0, 5.0))
         
         driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/a").click() # 조회하기
         time.sleep(uniform(3.0, 5.0))
 
         ranking_num = 1 # 랭킹 순위
-        for k in tqdm(range(1, 11), desc="데이터랩 진행상황 (%d)"%(j+1)) : # 인기 검색어 10페이지까지 크롤링
-
-            soup = BeautifulSoup(driver.page_source, "lxml")
-            time.sleep(uniform(3.0, 7.0))
-
+        for k in tqdm(range(10), desc="데이터랩 진행상황 (%d)"%(j+1)) : # 인기 검색어 10페이지까지 크롤링
+            
             popular_keywords =driver.find_elements_by_class_name("link_text") # 인기 검색어
             time.sleep(uniform(2.0, 4.0))
         
             for word in popular_keywords:
                 datalab_tmp.append(word.text[len(str(ranking_num)):]) # 앞에 필요없는 부분들(rankgin_num)을 지운 후 저장
                 ranking_num += 1
-
-            driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[2]/div[2]/div/div/div[2]/div/a[2]").click()  # 다음 페이지로 넘어가기
-            time.sleep(uniform(3.5, 7.0)) 
+            
+            if k != 9 :
+                driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[2]/div[2]/div/div/div[2]/div/a[2]").click()  # 다음 페이지로 넘어가기
+            time.sleep(uniform(3.5, 7.0))
+             
 
     # 앞에 필요없는 부분 제거
     [datalab_words.append(v.replace('\n','')) for v in datalab_tmp]

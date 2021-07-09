@@ -23,13 +23,10 @@ def get_cafe_keyword(keyword: str, driver:WebDriver):
     except NoSuchElementException or Exception as e:
         driver.implicitly_wait(1)
 
-    soup = BeautifulSoup(driver.page_source, "lxml")
-    time.sleep(uniform(2.0, 3.5))
-
     #카페 연관검색 수집
     try:
         cafe_keywords = driver.find_elements_by_class_name("relation_search_item")
-        time.sleep(uniform(2.0, 3.5))
+        time.sleep(uniform(1.0, 2.0))
     except NoSuchElementException or Exception as e:
         print("※ 해당 키워드는 카페 연관검색어가 존재하지 않습니다. ※")
 

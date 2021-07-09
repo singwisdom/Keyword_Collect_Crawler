@@ -49,7 +49,7 @@ class Ui_Dialog(object):
         driver = turn_on_chrome_driver() # 크롬 드라이버 옵션 설정
         print("\n>>>>>>> 키워드 분석을 시작합니다. <<<<<<<\n")
 
-        #각 모듈의 함수 호출
+        # 각 모듈의 함수 호출
         [sheet.append([i]) for i in tqdm(get_auto_keyword(keyword, driver), desc="자동완성어")]
         print(">> 네이버 자동완성어 수집 완료\n\n")
         [sheet.append([i]) for i in tqdm(get_blog_keyword(keyword, driver), desc="블로그")]
@@ -74,7 +74,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "키워드 분석 프로그램"))
+        Dialog.setWindowTitle(_translate("Dialog", "키워드 수집 프로그램"))
         self.ok.setText(_translate("Dialog", "확인"))
         self.info.setText(_translate("Dialog", "<html><head/><body><p><span style=\" font-size:18pt;\">검색어를 입력하세요!</span></p></body></html>"))
 

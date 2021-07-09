@@ -15,7 +15,6 @@ def get_blog_keyword(keyword:str, driver:WebDriver):
 
     driver.find_element_by_name("sectionBlogQuery").send_keys(keyword) # 검색창에 입력할 키워드 받고 입력
     driver.find_element_by_xpath("//*[@id='header']/div[1]/div/div[2]/form/fieldset/a[1]/i").click() # 검색 조회
-    time.sleep(uniform(1.0, 2.0))
     soup = BeautifulSoup(driver.page_source, "lxml")
     time.sleep(uniform(1.0, 2.0))
 
