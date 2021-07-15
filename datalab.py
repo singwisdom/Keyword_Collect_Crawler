@@ -2,19 +2,18 @@ import time
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.webdriver import WebDriver
-from shopping_category_title import get_category
 from random import uniform
 
 ############### 데이터랩 크롤러 ##########################
 
-def get_datalab(driver:WebDriver):
+def get_datalab(find:list, driver:WebDriver):  #카테고리 모듈에서 카테고리를 받아옴
 
     datalab_tmp=[] # 데이터랩에서 순위 저장할 리스트
     datalab_words=[] # 데이터랩에서 순위 저장하고 정제한 후 return 할 최종 리스트
     section=['', '', '', ''] # 1분류 부터 4분류까지 저장할 리스트
     
-    find=get_category()  #카테고리 모듈에서 카테고리를 받아옴
-    length = len(find)  #카테고리의 길이
+    print(find)
+    length = len(find)  # 카테고리의 길이
 
     # find의 길이만큼 반복
     for j in range(0, length) :
@@ -38,19 +37,19 @@ def get_datalab(driver:WebDriver):
             time.sleep(uniform(4.0, 6.0))
             
         driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[2]/div[1]/span/label[3]").click() # 기간 1년 선택
-        time.sleep(uniform(3.0, 5.0))
+        time.sleep(uniform(4.0, 6.0))
 
         driver.find_element_by_xpath("//*[@id='18_device_0']").click() # 기기 전체 선택
-        time.sleep(uniform(3.0, 5.0))
+        time.sleep(uniform(4.0, 6.0))
         
         driver.find_element_by_xpath("//*[@id='19_gender_0']").click() # 성별 전체 선택
-        time.sleep(uniform(3.0, 5.0))
+        time.sleep(uniform(4.0, 6.0))
         
         driver.find_element_by_xpath("//*[@id='20_age_0']").click() # 연령 전체 선택
-        time.sleep(uniform(3.0, 5.0))
+        time.sleep(uniform(4.0, 6.0))
         
         driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/a").click() # 조회하기
-        time.sleep(uniform(3.0, 5.0))
+        time.sleep(uniform(4.0, 6.0))
 
         ranking_num = 1 # 랭킹 순위
         for k in tqdm(range(10), desc="데이터랩 진행상황 (%d)"%(j+1)) : # 인기 검색어 10페이지까지 크롤링
@@ -64,7 +63,7 @@ def get_datalab(driver:WebDriver):
             
             if k != 9 :
                 driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[2]/div[2]/div/div/div[2]/div/a[2]").click()  # 다음 페이지로 넘어가기
-            time.sleep(uniform(3.5, 7.0))
+            time.sleep(uniform(4.0, 7.0))
              
 
     # 앞에 필요없는 부분 제거

@@ -5,10 +5,10 @@ from random import uniform
 from selenium.webdriver.remote.webdriver import WebDriver
 
 ############### 쇼핑 타이틀, 카테고리 크롤러 ###############
-category=[]
 
 def get_category_title(keyword:str, driver:WebDriver):
 
+    category=[]
     category_tmp=[]
     title=[]
     shopping_title=[]
@@ -37,7 +37,7 @@ def get_category_title(keyword:str, driver:WebDriver):
             for word in get_title:
                 title=word.text.split()
                 shopping_title+=title
-        time.sleep(uniform(1.0, 2.0))
+        # time.sleep(uniform(1.0, 2.0))
 
         # 모든 카테고리 리스트 저장
         for k in range(1, length+1):
@@ -51,7 +51,4 @@ def get_category_title(keyword:str, driver:WebDriver):
         if v not in category:
             category.append(v)
             
-    return shopping_title
-
-def get_category():
-    return category
+    return shopping_title, category
