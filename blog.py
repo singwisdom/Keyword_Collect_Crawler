@@ -20,7 +20,7 @@ def get_blog_keyword(keyword:str, driver:WebDriver):
 
     try:
         blog_keywords = driver.find_elements_by_css_selector("#container > div > aside > div > div.area_keyword > div.list > a") # 블로그 연관검색 
-    except  NoSuchElementException or ElementNotInteractableException or Exception as e:
+    except  (NoSuchElementException, ElementNotInteractableException, Exception) as e:
         print("※ 해당 키워드는 블로그 연관검색어가 존재하지 않습니다. ※")
 
     [blog_words.append(word.text) for word in blog_keywords]

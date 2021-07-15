@@ -12,22 +12,22 @@ def get_cafe_keyword(keyword: str, driver:WebDriver):
     # 카페 페이지 이동
     driver.get("https://section.cafe.naver.com/")
     
-    driver.find_element_by_css_selector("#header > div.snb_area > div > form > fieldset > div > div > input").send_keys(keyword) # 검색창에 입력할 키워드 받고 입력
-    driver.find_element_by_css_selector("#header > div.snb_area > div > form > fieldset > div > button > span.ico_search").click() # 검색 조회
+    driver.find_element_by_css_selector("#header > div.snb_area > div > div.SearchArea > form > fieldset > div > div > div.FormInputText > input").send_keys(keyword) # 검색창에 입력할 키워드 받고 입력
+    driver.find_element_by_css_selector("#header > div.snb_area > div > div.SearchArea > form > fieldset > div > button").click() # 검색 조회
     time.sleep(uniform(2.0, 3.0))
 
     # 더보기 버튼 누르기
     try:
         driver.find_element_by_xpath("//*[@id='app']/div/div[2]/div/div[1]/div[1]/div/a").click()
         driver.implicitly_wait(1)
-    except NoSuchElementException or Exception as e:
+    except (NoSuchElementException, Exception) as e:
         driver.implicitly_wait(1)
 
     #카페 연관검색 수집
     try:
         cafe_keywords = driver.find_elements_by_class_name("relation_search_item")
         time.sleep(uniform(1.0, 2.0))
-    except NoSuchElementException or Exception as e:
+    except (NoSuchElementException, Exception) as e:
         print("※ 해당 키워드는 카페 연관검색어가 존재하지 않습니다. ※")
 
     [cafe_words.append(word.text) for word in cafe_keywords]
