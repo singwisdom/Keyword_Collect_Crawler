@@ -1,11 +1,24 @@
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from proxy import proxy_create
 import chromedriver_autoinstaller
+from selenium.webdriver.remote.remote_connection import LOGGER, logging
 
 def turn_on_chrome_driver():
 
     check_chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0]  # 크롬버전 확인
+
+    proxy = proxy_create()
+    PROXY = proxy
+
+    webdriver.DesiredCapabilities.CHROME['proxy'] = {
+        "httpProxy": PROXY,
+        "ftpProxy": PROXY,
+        "sslProxy": PROXY,
+        "proxyType": "MANUAL",
+    }
+    LOGGER.setLevel(logging.WARNING)
 
     # 크롬드라이버 옵션 설정
     options = webdriver.ChromeOptions()

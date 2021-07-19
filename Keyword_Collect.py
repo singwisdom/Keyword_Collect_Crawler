@@ -56,39 +56,47 @@ class Ui_Dialog(object):
             driver = turn_on_chrome_driver() # 크롬 드라이버 옵션 설정
             print("\n\n>>>>>>> '%s' 키워드 분석을 시작합니다. <<<<<<<\n" %keyword[count])
 
-            # 각 모듈의 함수 호출
-            [sheet.append([i]) for i in tqdm(get_auto_keyword(keyword[count], driver), desc="자동완성어")]
-            print(">> 네이버 자동완성어 수집 완료\n")
-            [sheet.append([i]) for i in tqdm(get_blog_keyword(keyword[count], driver), desc="블로그")]
-            print(">> 블로그 연관검색어 수집 완료\n")   
-            [sheet.append([i]) for i in tqdm(get_cafe_keyword(keyword[count], driver), desc="카페")]
-            print(">> 카페 연관검색어 수집 완료\n")
-            [sheet.append([i]) for i in tqdm(get_shopping_keyword_and_relatedword(keyword[count], driver), desc="네이버 쇼핑 검색어")]
-            print(">> 네이버 쇼핑사이트 키워드추천, 연관검색어 수집 완료\n")
+            try :
+                # 각 모듈의 함수 호출
+                [sheet.append([i]) for i in tqdm(get_auto_keyword(keyword[count], driver), desc="자동완성어")]
+                print(">> 네이버 자동완성어 수집 완료\n")
+                [sheet.append([i]) for i in tqdm(get_blog_keyword(keyword[count], driver), desc="블로그")]
+                print(">> 블로그 연관검색어 수집 완료\n")   
+                [sheet.append([i]) for i in tqdm(get_cafe_keyword(keyword[count], driver), desc="카페")]
+                print(">> 카페 연관검색어 수집 완료\n")
+                [sheet.append([i]) for i in tqdm(get_shopping_keyword_and_relatedword(keyword[count], driver), desc="네이버 쇼핑 검색어")]
+                print(">> 네이버 쇼핑사이트 키워드추천, 연관검색어 수집 완료\n")
 
-            category_title=[] #카테고리와 타이틀을 반환받을 리스트
-            category_title= get_category_title(keyword[count], driver) # 카테고리와 타이틀을 저장
-            [sheet.append([i]) for i in tqdm(category_title[0], desc="네이버 쇼핑 검색어")] # 타이틀을 엑셀에 저장
-            print(">> 네이버 쇼핑 사이트 카테고리, 타이틀 수집 완료\n")
+                category_title=[] #카테고리와 타이틀을 반환받을 리스트
+                category_title= get_category_title(keyword[count], driver) # 카테고리와 타이틀을 저장
+                [sheet.append([i]) for i in tqdm(category_title[0], desc="네이버 쇼핑 검색어")] # 타이틀을 엑셀에 저장
+                print(">> 네이버 쇼핑 사이트 카테고리, 타이틀 수집 완료\n")
 
-            [sheet.append([i]) for i in tqdm(get_datalab(category_title[1], driver), desc="네이버 데이터랩")] 
-            print(">> 데이터랩 인기검색어 수집 완료\n")
+                [sheet.append([i]) for i in tqdm(get_datalab(category_title[1], driver), desc="네이버 데이터랩")] 
+                print(">> 데이터랩 인기검색어 수집 완료\n")
 
-            driver.quit() # 종료
-            print("'%s' 키워드 수집이 완료되었습니다." %keyword[count])
-            wb.save("[%s] 키워드 수집.xlsx" %keyword[count]) # 엑셀 파일로 저장
-            wb.close()
+                driver.quit() # 종료
+                print("'%s' 키워드 수집이 완료되었습니다." %keyword[count])
+                wb.save("[%s] 키워드 수집.xlsx" %keyword[count]) # 엑셀 파일로 저장
+                wb.close()
+
+            except Exception as e:
+                session = smtplib.SMTP('smtp.worksmobile.com', 587) # 이메일을 보내기 위한 SMTP 세션
+                # session.starttls() # SMTP 연결을 TLS 모드로 설정
+                # session.login('intern@martroo.com', 'akxmfn0617%') # 순서대로 네이버 웍스 계정 아이디,비밀번호 (여기서 앱 비밀먼호는 단순 계정 비밀번호가 아님. IMAP 설정 참고)
+                # msg = MIMEText('%s 키워드 수집 중 오류가 발생했습니다. 해당 키워드부터 다시 실행해주세요' %keyword[count])
+                # msg['Subject'] = '※ 키워드 수집 오류 ※' # 메일 보내기
+                # session.sendmail("intern@martroo.com" , "epqlfdusrma@daum.net" , msg.as_string())
+                # session.quit() # 세션 종료
 
         print("◆ 모든 작업이 완료되었습니다. ◆")
-
-        session = smtplib.SMTP('smtp.gmail.com', 587) # 이메일을 보내기 위한 SMTP 세션
-        session.starttls() # SMTP 연결을 TLS 모드로 설정
-        session.login('0903jihyie@gmail.com', 'wpbfsxzhztuwpwrb') # 순서대로 지메일 계정, 앱 비밀번호 (여기서 앱 비밀먼호는 단순 계정 비밀번호가 아님. IMAP 설정 참고)
-
-        msg = MIMEText('내용 : %s 키워드 수집이 완료되었습니다.' %keyword)
-        msg['Subject'] = '제목 : 키워드 수집 완료 알림' # 메일 보내기
-        session.sendmail("0903jihyie@gmail.com" , "epqlfdusrma@daum.net" , msg.as_string())
-        session.quit() # 세션 종료
+        # session = smtplib.SMTP('smtp.worksmobile.com', 587) # 이메일을 보내기 위한 SMTP 세션
+        # session.starttls() # SMTP 연결을 TLS 모드로 설정
+        # session.login('intern@martroo.com', 'akxmfn0617%') # 순서대로 네이버 웍스 계정 아이디,비밀번호 (여기서 앱 비밀먼호는 단순 계정 비밀번호가 아님. IMAP 설정 참고)
+        # msg = MIMEText('%s 키워드 수집이 완료되었습니다.' %keyword)
+        # msg['Subject'] = '키워드 수집 완료 알림' # 메일 보내기
+        # session.sendmail("intern@martroo.com" , "epqlfdusrma@daum.net" , msg.as_string())
+        # session.quit() # 세션 종료
 
         self.info.setText("키워드 수집 완료")
         self.info.setFont(QtGui.QFont("나눔스퀘어OTF Bold", 18)) # 폰트,크기 조절 

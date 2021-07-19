@@ -17,16 +17,16 @@ def get_category_title(keyword:str, driver:WebDriver):
     url = "https://search.shopping.naver.com/search/all?origQuery="+keyword+"&pagingIndex={}&pagingSize=40&productSet=total&query="+keyword+"&sort=rel&timestamp=&viewType=list"
     
     # 1페이지 부터 3페이지까지 크롤링
-    for i in tqdm(range(1, 4), desc="카테고리 & 제목") :
+    for i in tqdm(range(1 , 4), desc="카테고리 & 제목") :
         link = url.format(i)
         driver.get(link)
-        time.sleep(uniform(1.0, 2.0))
+        time.sleep(uniform(1.0 , 2.0))
 
         #스크롤 끝까지 내리기
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);") 
-        time.sleep(uniform(1.0, 2.0))
+        time.sleep(uniform(1.0 , 2.0))
         soup = BeautifulSoup(driver.page_source, "lxml")
-        time.sleep(uniform(1.0, 2.0))
+        time.sleep(uniform(1.0 , 2.0))
 
         # 카테고리
         length = len(soup.select("#__next > div > div.style_container__1YjHN > div.style_inner__18zZX > div.style_content_wrap__1PzEo > div.style_content__2T20F > ul > div > div"))

@@ -10,10 +10,8 @@ def get_shopping_keyword_and_relatedword(keyword:str, driver:WebDriver):
     # 쇼핑 페이지 이동
     driver.get("https://search.shopping.naver.com/search/all?query="+keyword)
     soup = BeautifulSoup(driver.page_source, "lxml")
-
     find_where_recommend = [] # 키워드추천이 어디에 있는지 찾기 위한 변수
     
-
     # div의 개수를 구함
     div_length=len(soup.select("#__next > div > div.style_container__1YjHN > div.style_inner__18zZX > div.filter_finder__1Gtei > div > div"))
 
@@ -33,7 +31,7 @@ def get_shopping_keyword_and_relatedword(keyword:str, driver:WebDriver):
         if find_where_recommend[i]=='키워드추천더보기' or find_where_recommend[i]=='키워드추천': # 리스트에 키워드 추천이 있을 경우
             try:
                 driver.find_element_by_xpath("//*[@id='__next']/div/div[2]/div[2]/div[2]/div/div[%d]/div[1]/a"%(i+1)).click()
-                time.sleep(uniform(1.0, 2.5))
+                # time.sleep(uniform(1.0, 2.5))
                 soup = BeautifulSoup(driver.page_source, "lxml")
                 
                 # 키워드추천 크롤링
@@ -45,8 +43,6 @@ def get_shopping_keyword_and_relatedword(keyword:str, driver:WebDriver):
         else: # 리스트에 키워드 추천이 없을 경우
             if i==length-1:
                 time.sleep(0.5)
-
-
     
     soup = BeautifulSoup(driver.page_source, "lxml")
     time.sleep(uniform(1.0, 2.5))
