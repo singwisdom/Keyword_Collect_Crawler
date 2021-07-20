@@ -12,6 +12,38 @@ def turn_on_chrome_driver():
     proxy = proxy_create()
     PROXY = proxy
 
+    webdriver.DesiredCapabilities.FIREFOX['proxy'] = {
+        "httpProxy": PROXY,
+        "ftpProxy": PROXY,
+        "sslProxy": PROXY,
+        "proxyType": "MANUAL",
+    }
+    LOGGER.setLevel(logging.WARNING)
+
+    # 크롬드라이버 옵션 설정
+    options = webdriver.ChromeOptions()
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+
+    try:
+        driver = webdriver.Chrome(f'./{check_chrome_ver}/chromedriver.exe', chrome_options=options)
+    except Exception as e:
+        chromedriver_autoinstaller.install(True)
+        driver = webdriver.Chrome(f'./{check_chrome_ver}/chromedriver.exe', chrome_options=options)
+
+    # 대기 설정
+    # wait = WebDriverWait(driver, 3)
+    visible = EC.visibility_of_element_located  # DOM에 나타남, 웹에 보여야 조건 만족
+    
+    return driver
+
+
+def turn_on_chrome_for_datalab_driver():
+
+    check_chrome_ver = chromedriver_autoinstaller.get_chrome_version().split('.')[0]  # 크롬버전 확인
+
+    proxy = proxy_create()
+    PROXY = proxy
+
     webdriver.DesiredCapabilities.CHROME['proxy'] = {
         "httpProxy": PROXY,
         "ftpProxy": PROXY,
@@ -31,7 +63,7 @@ def turn_on_chrome_driver():
         driver = webdriver.Chrome(f'./{check_chrome_ver}/chromedriver.exe', chrome_options=options)
 
     # 대기 설정
-    wait = WebDriverWait(driver, 3)
+    # wait = WebDriverWait(driver, 3)
     visible = EC.visibility_of_element_located  # DOM에 나타남, 웹에 보여야 조건 만족
-
+    
     return driver

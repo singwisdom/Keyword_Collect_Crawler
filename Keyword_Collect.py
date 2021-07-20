@@ -69,16 +69,21 @@ class Ui_Dialog(object):
 
                 category_title=[] #카테고리와 타이틀을 반환받을 리스트
                 category_title= get_category_title(keyword[count], driver) # 카테고리와 타이틀을 저장
+
+                print(category_title[1])
+
                 [sheet.append([i]) for i in tqdm(category_title[0], desc="네이버 쇼핑 검색어")] # 타이틀을 엑셀에 저장
                 print(">> 네이버 쇼핑 사이트 카테고리, 타이틀 수집 완료\n")
 
-                [sheet.append([i]) for i in tqdm(get_datalab(category_title[1], driver), desc="네이버 데이터랩")] 
-                print(">> 데이터랩 인기검색어 수집 완료\n")
+                for k in tqdm(range(0,len(category_title[1])), desc="네이버 데이터랩"):
+                    [sheet.append([i]) for i in get_datalab(category_title[1][k], driver)]
 
+                    if k%5==0:
+                        driver.quit() # 종료
+                        driver = turn_on_chrome_driver() # 새 드라이버를 받음
+                       
+                print(">> 데이터랩 인기검색어 수집 완료\n")
                 driver.quit() # 종료
-                print("'%s' 키워드 수집이 완료되었습니다." %keyword[count])
-                wb.save("[%s] 키워드 수집.xlsx" %keyword[count]) # 엑셀 파일로 저장
-                wb.close()
 
             except Exception as e:
                 session = smtplib.SMTP('smtp.worksmobile.com', 587) # 이메일을 보내기 위한 SMTP 세션
@@ -89,6 +94,9 @@ class Ui_Dialog(object):
                 # session.sendmail("intern@martroo.com" , "epqlfdusrma@daum.net" , msg.as_string())
                 # session.quit() # 세션 종료
 
+        print("'%s' 키워드 수집이 완료되었습니다." %keyword[count])
+        wb.save("[%s] 키워드 수집.xlsx" %keyword[count]) # 엑셀 파일로 저장
+        wb.close()
         print("◆ 모든 작업이 완료되었습니다. ◆")
         # session = smtplib.SMTP('smtp.worksmobile.com', 587) # 이메일을 보내기 위한 SMTP 세션
         # session.starttls() # SMTP 연결을 TLS 모드로 설정
