@@ -1,4 +1,4 @@
-from time import time
+import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 import openpyxl
@@ -12,7 +12,7 @@ from turn_on_chrome import turn_on_chrome_driver
 import sys
 from tqdm import tqdm
 from send_email import send_success_mail, send_fail_mail
-
+import os
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -60,7 +60,7 @@ class Ui_Dialog(object):
 
 
     def btnClick(self):
-     
+
         input_keyword=self.find.toPlainText() # 에디트 박스에서 키워드를 받아옴
         receiver = self.email.toPlainText() # 에디트 박스에서 이메일 주소를 받아옴
         keyword = input_keyword.split('\n') # 엔터로 키워드를 구분해서 리스트에 입력
@@ -116,7 +116,7 @@ class Ui_Dialog(object):
             wb.save("[%s] 키워드 수집.xlsx" %keyword[count]) # 엑셀 파일로 저장
             wb.close()
 
-            if count%5==0: # 데이터랩에서 과부하 걸리지 않기 위해 5번마다 쉬어줌
+            if count%3==0: # 데이터랩에서 과부하 걸리지 않기 위해 3번마다 쉬어줌
                 time.sleep(30)
 
         if check_success==True :

@@ -37,12 +37,12 @@ def get_datalab(find:list, driver:WebDriver):  #카테고리 모듈에서 카테
             time.sleep(uniform(2.0, 4.0))
             
         driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[1]/div/div/div[2]/div[1]/span/label[3]").click() # 기간 1년 선택
-        time.sleep(uniform(1.5, 2.5))
+        time.sleep(uniform(2.5, 4.5))
         driver.find_element_by_xpath("//*[@id='18_device_0']").click() # 기기 전체 선택
         time.sleep(uniform(4.0, 6.0))
         
         driver.find_element_by_xpath("//*[@id='19_gender_0']").click() # 성별 전체 선택
-        time.sleep(uniform(1.5, 2.5))
+        time.sleep(uniform(2.5, 4.5))
         driver.find_element_by_xpath("//*[@id='20_age_0']").click() # 연령 전체 선택
         time.sleep(uniform(3.0, 5.0))
         
@@ -61,7 +61,7 @@ def get_datalab(find:list, driver:WebDriver):  #카테고리 모듈에서 카테
             
             if j != 9 :
                 driver.find_element_by_xpath("//*[@id='content']/div[2]/div/div[2]/div[2]/div/div/div[2]/div/a[2]").click()  # 다음 페이지로 넘어가기
-            time.sleep(uniform(4.0, 7.0))
+            time.sleep(uniform(5.0, 7.0))
 
     except Exception as e:
             print("오류가 발생하였습니다")
